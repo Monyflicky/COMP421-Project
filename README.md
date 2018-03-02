@@ -17,7 +17,7 @@ Question 5: P2Q5n.log
 Question 6: Q6 Data Modification Document.pdf, DataMods.sql
 
 
-Question 7: 
+Question 7: Views_1_and_2.sql
 
 
 Question 8: P2Q2Q8.log
