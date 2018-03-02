@@ -1,0 +1,26 @@
+Relational Model
+Entity: 
+Activity(Expected Attendance, Age limit, Name, Staff Needed, duration) 
+Scheduled Activity(Name, Date) Name ref Activity 
+Panel(Expected Attendance, Age limit, Name, Staff Needed) all ref Activity
+Market(Expected Attendance, Age limit, Name, Staff Needed) all ref activity
+Show(Expected Attendance, Age limit, Name, Staff Needed) all ref activity
+Attendee(Name, Age, Address, city, province, Phone Number, Email, Username) 
+Equipment(Equipment ID, Name) 
+Room(Capacity, Room Number) 
+Staff(Name, Staff ID, Role, Work hours)  
+Guest(Name, Speciality, Phone Number, Country of Origin) 
+Sponsor(SponsorName, Contribution)  
+
+Relational Model 
+Relationship:
+Rentals(Equipment ID, Name) (Equipment ID ref Equipment, Name ref Activity) 
+Attendance(Username, Name, Date, VIP Status) (Username ref Attendee, Name/Date ref ScheduledActivity) 
+Schedule(Staff ID, Room Number, Name, Date, Start time) (Staff ID ref Staff, Room Number ref Room, Name/Date ref ScheduledActivity) 
+Liasons(Staff ID, Name) (Staff ID ref Staff, Name ref Sponsor)  
+Sponsorships(Name, SponsorName, Amount) (Name ref Activity, SponsorName ref Sponsor) 
+Speakers(Guest Name, Name) (Guest Name ref Guest, Name ref Panel)
+Vendors(Guest Name, Name) (Guest Name ref Guest, Name ref Market)
+Performers(Guest Name, Name) (Guest Name ref Guest, Name ref Show) 
+
+Modified relational model so foreign keys reference related entity set's relation and not root. Ex Name now references Panel and not Activity. 
