@@ -58,9 +58,13 @@ Foreign-key constraints:
     "performers_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
     "performers_shows_fk" FOREIGN KEY (actname) REFERENCES shows(actname) ON UPDATE CASCADE ON DELETE CASCADE
 
+-------------------------------------------------------------------------------------------
+
 /*DESCRIPTION: This query checks the Speaker, Performer and Vendor relations and ensures
 that every entity in guest is referenced in at least one of these relations.
 It lists the guests that are not. This helps inforce a participation constraint.*/
+
+-------------------------------------------------------------------------------------------
 
 SELECT gname 
 FROM guests g
@@ -78,6 +82,8 @@ WHERE g.gname NOT IN (SELECT gname FROM speakers
  Rudyard Morris
  Bob pop
 (6 rows)
+
+=========================================================================================================================
 
 /*Query 2*/
 
@@ -170,10 +176,14 @@ Foreign-key constraints:
     "performers_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
     "performers_shows_fk" FOREIGN KEY (actname) REFERENCES shows(actname) ON UPDATE CASCADE ON DELETE CASCADE
 
+-------------------------------------------------------------------------------------------
+
 /*DESCRIPTION: This query lists the names of Activites that are present in Activites
 entity set but not in the Vendor, Performer or Vendor relations. This 
 is a violation of participation constraints since all activities
 must have a host and therefore be referenced in one of these relations.*/
+
+-------------------------------------------------------------------------------------------
 
 SELECT actname FROM panel
 EXCEPT
@@ -189,6 +199,8 @@ SELECT actname FROM performers;
  actname 
 ---------
 (0 rows)
+
+=========================================================================================================================
 
 /*Query 3*/
 
@@ -222,10 +234,14 @@ Foreign-key constraints:
     "schedule_schedactivity_fk" FOREIGN KEY (sdate, actname) REFERENCES schedactivity(sdate, actname) ON UPDATE CASCADE ON DELETE CASCADE
     "schedule_sid_fkey" FOREIGN KEY (sid) REFERENCES staff(sid)
 
+-------------------------------------------------------------------------------------------
+
 /*DESCRIPTION: Given a specific attendee (in this case username 'jatei04') this query
 lists all the activities the user is interested in attending. In other words
 all entries in attendence that reference the username. It list them
 in order of occurance first by day, then by time, then name.*/
+
+-------------------------------------------------------------------------------------------
 
 SELECT temp.actname, temp.sdate, temp.actstart
 FROM	(SELECT DISTINCT a.actname, a.sdate, s.actstart
@@ -242,6 +258,8 @@ ORDER BY temp.sdate, temp.actstart, temp.actname;
  Ethical Artificial Intelligence Workshop | 2018-04-14 | 10:00:00
  Management in Analytics                  | 2018-04-14 | 10:30:00
 (6 rows)
+
+=========================================================================================================================
 
 /*Query 4*/
 
@@ -289,9 +307,13 @@ Foreign-key constraints:
     "schedule_schedactivity_fk" FOREIGN KEY (sdate, actname) REFERENCES schedactivity(sdate, actname) ON UPDATE CASCADE ON DELETE CASCADE
     "schedule_sid_fkey" FOREIGN KEY (sid) REFERENCES staff(sid)
 
+-------------------------------------------------------------------------------------------
+
 /*DESCRIPTION: This query checks that a staff who is assigned to a sponser in the liason relation,
 is also assigned to the activity (via the schedule relation) that the sponser is 
 sponsering (sponserships relation).*/
+
+-------------------------------------------------------------------------------------------
 
 select distinct liasons.sid, liasons.sname, schedule.actname, schedule.sdate
 from liasons
@@ -309,6 +331,8 @@ where schedule.actname not in (
  944 | Pear      | Dealers Room                             | 2018-04-15
  944 | Pear      | Dealers Room                             | 2018-04-14
 (4 rows)
+
+=========================================================================================================================
 
 /*Query 5*/
 
@@ -343,9 +367,13 @@ Foreign-key constraints:
     "schedule_schedactivity_fk" FOREIGN KEY (sdate, actname) REFERENCES schedactivity(sdate, actname) ON UPDATE CASCADE ON DELETE CASCADE
     "schedule_sid_fkey" FOREIGN KEY (sid) REFERENCES staff(sid)
 
+-------------------------------------------------------------------------------------------
+
 /*DESCRIPTION: Given a specific sid (staff ID number) this query gives the total number
 of hours the staff member is scheduled to work during the convention. 
 Staff are scheduled by being referenced in the schedule relation.*/
+
+-------------------------------------------------------------------------------------------
 
 SELECT SUM(temp.difference) AS total_hours
 FROM  staff st, (SELECT sid, actend - actstart AS difference
@@ -355,6 +383,8 @@ WHERE st.sid = 297 AND temp.sid = st.sid;
 -------------
  02:00:00
 (1 row)
+
+=========================================================================================================================
 
 /*Query 6*/
 \d attendee
@@ -406,10 +436,14 @@ Referenced by:
     TABLE "shows" CONSTRAINT "shows_activity_fk" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
     TABLE "sponsorships" CONSTRAINT "sponsorships_activity_fk" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
 
+-------------------------------------------------------------------------------------------
+
 /*DESCRIPTION: The query checks whether any attendees are planning to attend events for which
 they are too young. It does so by checking the attendance relation and checking
 the ages of referenced attendees and age limits of specific activites.
 It then lists the attendees name, their age, the actname and the age limit.*/
+
+-------------------------------------------------------------------------------------------
 
 SELECT aee.att_name, aee.age, temp.actname, temp.agelim
 FROM attendee aee, (SELECT aee.username, ance.actname, act.agelim, aee.age-act.agelim AS agediff
