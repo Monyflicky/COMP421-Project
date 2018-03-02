@@ -1,0 +1,7 @@
+Creativity and Complexity
+
+An element of creativity in our project comes from the unique restrictions for scheduling (ternary relationship and time/type restrictions). The scheduling of different types of activities and their associated guests further distinguishes the project. 
+http://generatedata.com/
+The link above is source to an Automated data generation tool that we used in the project to feel up the data in the Attendee,Staff, and room. It is a free website that was so efficient for this kind of activity. This utilizes the first  creativity point indicated in the assignment project.
+
+The data we generated in the 3 tables (Attendee, Staff, and room) is more of real world like. All of the attendee names(att_name) are all real names of persons who exists somewhere in the world including all the other attributes in the same  Attendee relation. The same goes with the staff names (stname) and room number (roomno). The entry capacity for each relation does not exceed 500  and it is not also below 100 which obeys the rule in the project assignment.
