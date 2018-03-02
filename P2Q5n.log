@@ -411,17 +411,18 @@ they are too young. It does so by checking the attendance relation and checking
 the ages of referenced attendees and age limits of specific activites.
 It then lists the attendees name, their age, the actname and the age limit.*/
 
-select att_name, age, activity.actname, agelim
-from attendee
-inner join attendance on attendee.username=attendance.username and age<18
-inner join activity on attendance.actname=activity.actname and activity.agelim>=18;
-    att_name     | age |      actname      | agelim 
+SELECT aee.att_name, aee.age, temp.actname, temp.agelim
+FROM attendee aee, (SELECT aee.username, ance.actname, act.agelim, aee.age-act.agelim AS agediff
+                                   FROM attendee aee, attendance ance, activity act
+                                   WHERE aee.username = ance.username AND ance.actname = act.actname) temp
+WHERE aee.username = temp.username AND temp.agediff < 0;
+    att_name     | age |      actname      | agelim
 -----------------+-----+-------------------+--------
- Iliana Swanson  |  14 | Power Hour        |     19
- Iliana Swanson  |  14 | Rental Mario-Kart |     21
  Carter Lindsay  |  15 | Power Hour        |     19
  Carter Lindsay  |  15 | Rental Mario-Kart |     21
+ Iliana Swanson  |  20 | Rental Mario-Kart |     21
  Callie Espinoza |  14 | Power Hour        |     19
  Callie Espinoza |  14 | Rental Mario-Kart |     21
-(6 rows)
+(5 rows)
+
 
