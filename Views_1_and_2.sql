@@ -4,7 +4,7 @@
 --This view is used to acess the query that returns the activities that attendies have signed up for and will
 --be attending(continuation of the line before)
 
-create view Tempta (TemptaName,TemptaSdate,TemptaActstart)
+create view AttendeeSchedule (actname,sdate, actstart)
 as select temp.actname, temp.sdate, temp.actstart
 from (select distinct a.actname, a.sdate, s.actstart
 		from attendance a, schedule s
@@ -12,16 +12,17 @@ from (select distinct a.actname, a.sdate, s.actstart
 		order by a.actname, a.sdate, s.actstart) temp
 order by temp.sdate, temp.actstart, temp.actname;
 
-	
-select TemptaName, TemptaSdate, TemptaActstart
-from Tempta
-where TemptaActstart in (select  TemptaActstart
-                        from Tempta
-                        where  TemptaActstart > '09:00:00');
 
-update Tempta
-set TemptaSdate = '2018-04-15'
-where TemptaName = 'Management in Analytics'
+	
+select actname, sdate, actstart
+from AttendeeSchedule
+where actstart in (select  actstart
+                        from AttendeeSchedule
+                        where  actstart > '09:00:00');
+
+update AttendeeSchedule
+set sdate = '2018-04-15'
+where actame = 'Management in Analytics'
 
 --This particular view is not updatable. The query execution of update to Tempta fails because views are not automatically updatable
 --To enable updating the table it says we should provide and INSTEAD of update trigger or an unconditional on update do INSTEAD rule.
