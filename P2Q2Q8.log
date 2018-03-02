@@ -1,0 +1,469 @@
+create table activity (
+	expatt int not null,
+	agelim int,
+	actname varchar,
+	reqstafff int not null,
+	duration time not null,
+	primary key(actname)
+);
+CREATE TABLE
+\d activity
+            Table "cs421g45.activity"
+  Column   |          Type          | Modifiers 
+-----------+------------------------+-----------
+ expatt    | integer                | not null
+ agelim    | integer                | 
+ actname   | character varying      | not null
+ reqstafff | integer                | not null
+ duration  | time without time zone | not null
+Indexes:
+    "activity_pkey" PRIMARY KEY, btree (actname)
+
+
+create table schedactivity(
+	sdate date not null,
+	actname varchar not null, 
+	foreign key (actname) references activity(actname) ON UPDATE CASCADE ON DELETE CASCADE,
+	primary key(sdate, actname)
+);
+CREATE TABLE
+\d schedactivity 
+      Table "cs421g45.schedactivity"
+ Column  |       Type        | Modifiers 
+---------+-------------------+-----------
+ sdate   | date              | not null
+ actname | character varying | not null
+Indexes:
+    "schedactivity_pkey" PRIMARY KEY, btree (sdate, actname)
+Foreign-key constraints:
+    "schedactivity_actname_fkey" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+
+
+CREATE TABLE Shows (
+	expatt INTEGER NOT NULL,
+	agelim integer,
+	actname varchar UNIQUE,
+	reqstaff integer NOT NULL,
+	duration time NOT NULL,
+	FOREIGN KEY (actname) REFERENCES activity(actname)
+);
+CREATE TABLE
+\d shows
+             Table "cs421g45.shows"
+  Column  |          Type          | Modifiers 
+----------+------------------------+-----------
+ expatt   | integer                | not null
+ agelim   | integer                | 
+ actname  | character varying      | 
+ reqstaff | integer                | not null
+ duration | time without time zone | not null
+Indexes:
+    "shows_actname_key" UNIQUE CONSTRAINT, btree (actname)
+Foreign-key constraints:
+    "shows_actname_fkey" FOREIGN KEY (actname) REFERENCES activity(actname)
+
+
+CREATE TABLE Market (
+	expatt INTEGER NOT NULL,
+	agelim integer,
+	actname varchar UNIQUE,
+	reqstaff integer NOT NULL,
+	duration time NOT NULL,
+	FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE,
+	primary key(actname)
+);
+CREATE TABLE
+\d market
+            Table "cs421g45.market"
+  Column  |          Type          | Modifiers 
+----------+------------------------+-----------
+ expatt   | integer                | not null
+ agelim   | integer                | 
+ actname  | character varying      | not null
+ reqstaff | integer                | not null
+ duration | time without time zone | not null
+Indexes:
+    "market_pkey" PRIMARY KEY, btree (actname)
+Foreign-key constraints:
+    "market_actname_fkey" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+
+
+CREATE TABLE Panel (
+	expatt INTEGER NOT NULL,
+	agelim integer,
+	actname varchar UNIQUE,
+	reqstaff integer NOT NULL,
+	duration time NOT NULL,
+	FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+);
+CREATE TABLE
+\d panel
+             Table "cs421g45.panel"
+  Column  |          Type          | Modifiers 
+----------+------------------------+-----------
+ expatt   | integer                | not null
+ agelim   | integer                | 
+ actname  | character varying      | 
+ reqstaff | integer                | not null
+ duration | time without time zone | not null
+Indexes:
+    "panel_actname_key" UNIQUE CONSTRAINT, btree (actname)
+Foreign-key constraints:
+    "panel_actname_fkey" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+
+
+create table attendee (
+	att_name varchar,
+	age integer,
+	address varchar,
+	city varchar,
+	province varchar,
+	a_phone varchar,
+	email varchar,
+	username varchar,
+	primary key(username)
+);
+CREATE TABLE
+\d attendee
+         Table "cs421g45.attendee"
+  Column  |       Type        | Modifiers 
+----------+-------------------+-----------
+ att_name | character varying | 
+ age      | integer           | 
+ address  | character varying | 
+ city     | character varying | 
+ province | character varying | 
+ a_phone  | character varying | 
+ email    | character varying | 
+ username | character varying | not null
+Indexes:
+    "attendee_pkey" PRIMARY KEY, btree (username)
+
+
+create table attendance(
+	username varchar,
+	sdate date,
+	actname varchar, 
+	foreign key (username) references attendee(username),
+	foreign key (sdate, actname) references schedactivity(sdate, actname) ON UPDATE CASCADE ON DELETE CASCADE,
+	primary key(username, sdate, actname)
+);
+CREATE TABLE
+\d attendance
+        Table "cs421g45.attendance"
+  Column  |       Type        | Modifiers 
+----------+-------------------+-----------
+ username | character varying | not null
+ sdate    | date              | not null
+ actname  | character varying | not null
+Indexes:
+    "attendance_pkey" PRIMARY KEY, btree (username, sdate, actname)
+Foreign-key constraints:
+    "attendance_sdate_fkey" FOREIGN KEY (sdate, actname) REFERENCES schedactivity(sdate, actname) ON UPDATE CASCADE ON DELETE CASCADE
+    "attendance_username_fkey" FOREIGN KEY (username) REFERENCES attendee(username)
+
+
+create table equipment (
+	eq_name varchar, 
+	eq_id varchar,
+	primary key(eq_id)
+);
+CREATE TABLE
+\d equipment
+        Table "cs421g45.equipment"
+ Column  |       Type        | Modifiers 
+---------+-------------------+-----------
+ eq_name | character varying | 
+ eq_id   | character varying | not null
+Indexes:
+    "equipment_pkey" PRIMARY KEY, btree (eq_id)
+
+
+create table rentals(
+	eq_id varchar,
+	actname varchar not null,
+	primary key(eq_id),
+	foreign key(eq_id) references equipment(eq_id),
+	foreign key(actname) references activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+);
+CREATE TABLE
+\d rentals
+         Table "cs421g45.rentals"
+ Column  |       Type        | Modifiers 
+---------+-------------------+-----------
+ eq_id   | character varying | not null
+ actname | character varying | not null
+Indexes:
+    "rentals_pkey" PRIMARY KEY, btree (eq_id)
+Foreign-key constraints:
+    "rentals_actname_fkey" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+    "rentals_eq_id_fkey" FOREIGN KEY (eq_id) REFERENCES equipment(eq_id)
+
+
+create table guests(
+	gname varchar not null,
+	g_phone varchar,
+	country varchar,
+	speciality varchar not null, 
+	primary key(gname, speciality)
+);
+CREATE TABLE
+\d guests
+           Table "cs421g45.guests"
+   Column   |       Type        | Modifiers 
+------------+-------------------+-----------
+ gname      | character varying | not null
+ g_phone    | character varying | 
+ country    | character varying | 
+ speciality | character varying | not null
+Indexes:
+    "guests_pkey" PRIMARY KEY, btree (gname, speciality)
+
+
+CREATE TABLE Performers (
+	gname varchar,
+	actname varchar,
+	speciality varchar,
+	FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality),
+	FOREIGN KEY (actname) REFERENCES shows(actname) ON UPDATE CASCADE ON DELETE CASCADE,
+	CHECK (speciality = 'performer')
+);
+CREATE TABLE
+\d performers
+         Table "cs421g45.performers"
+   Column   |       Type        | Modifiers 
+------------+-------------------+-----------
+ gname      | character varying | 
+ actname    | character varying | 
+ speciality | character varying | 
+Check constraints:
+    "performers_speciality_check" CHECK (speciality::text = 'performer'::text)
+Foreign-key constraints:
+    "performers_actname_fkey" FOREIGN KEY (actname) REFERENCES shows(actname) ON UPDATE CASCADE ON DELETE CASCADE
+    "performers_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+
+
+CREATE TABLE Speakers (
+	gname varchar,
+	actname varchar,
+	speciality varchar,
+	FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality),
+	FOREIGN KEY (actname) REFERENCES panel(actname) ON UPDATE CASCADE ON DELETE CASCADE,
+	CHECK (speciality = 'speaker')
+);
+CREATE TABLE
+\d speakers
+          Table "cs421g45.speakers"
+   Column   |       Type        | Modifiers 
+------------+-------------------+-----------
+ gname      | character varying | 
+ actname    | character varying | 
+ speciality | character varying | 
+Check constraints:
+    "speakers_speciality_check" CHECK (speciality::text = 'speaker'::text)
+Foreign-key constraints:
+    "speakers_actname_fkey" FOREIGN KEY (actname) REFERENCES panel(actname) ON UPDATE CASCADE ON DELETE CASCADE
+    "speakers_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+
+
+CREATE TABLE Vendors (
+	gname varchar,
+	actname varchar,
+	speciality varchar,
+	FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality),
+	FOREIGN KEY (actname) REFERENCES panel(actname) ON UPDATE CASCADE ON DELETE CASCADE,
+	PRIMARY KEY (gname, speciality),
+	CHECK (speciality = 'vendor')
+);
+CREATE TABLE
+\d vendors
+          Table "cs421g45.vendors"
+   Column   |       Type        | Modifiers 
+------------+-------------------+-----------
+ gname      | character varying | not null
+ actname    | character varying | 
+ speciality | character varying | not null
+Indexes:
+    "vendors_pkey" PRIMARY KEY, btree (gname, speciality)
+Check constraints:
+    "vendors_speciality_check" CHECK (speciality::text = 'vendor'::text)
+Foreign-key constraints:
+    "vendors_actname_fkey" FOREIGN KEY (actname) REFERENCES panel(actname) ON UPDATE CASCADE ON DELETE CASCADE
+    "vendors_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+
+
+create table room (
+	roomno varchar,
+	capacity int,
+	CONSTRAINT valid_room CHECK (roomno ~* '^(N|S|W|E).*'),
+	primary key(roomno)
+);
+CREATE TABLE
+\d room
+           Table "cs421g45.room"
+  Column  |       Type        | Modifiers 
+----------+-------------------+-----------
+ roomno   | character varying | not null
+ capacity | integer           | 
+Indexes:
+    "room_pkey" PRIMARY KEY, btree (roomno)
+Check constraints:
+    "valid_room" CHECK (roomno::text ~* '^(N|S|W|E).*'::text)
+
+
+create table sponsor(
+	sname VARCHAR not null,
+	contrib integer not null,
+	primary key (sname)	
+);
+CREATE TABLE
+\d sponsor
+         Table "cs421g45.sponsor"
+ Column  |       Type        | Modifiers 
+---------+-------------------+-----------
+ sname   | character varying | not null
+ contrib | integer           | not null
+Indexes:
+    "sponsor_pkey" PRIMARY KEY, btree (sname)
+
+
+create table sponsorships (
+	actname varchar,
+	sname varchar,
+	amount integer not null,
+	primary key(actname),
+	foreign key(actname) references activity(actname) ON UPDATE CASCADE ON DELETE CASCADE,
+	foreign key(sname) references sponsor(sname)
+);
+CREATE TABLE
+\d sponsorships
+      Table "cs421g45.sponsorships"
+ Column  |       Type        | Modifiers 
+---------+-------------------+-----------
+ actname | character varying | not null
+ sname   | character varying | 
+ amount  | integer           | not null
+Indexes:
+    "sponsorships_pkey" PRIMARY KEY, btree (actname)
+Foreign-key constraints:
+    "sponsorships_actname_fkey" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+    "sponsorships_sname_fkey" FOREIGN KEY (sname) REFERENCES sponsor(sname)
+
+
+create table staff(
+	sid integer not null,
+	stname varchar not null,
+	role varchar,
+	hours integer not null,
+	primary key(sid)
+);
+CREATE TABLE
+\d staff
+         Table "cs421g45.staff"
+ Column |       Type        | Modifiers 
+--------+-------------------+-----------
+ sid    | integer           | not null
+ stname | character varying | not null
+ role   | character varying | 
+ hours  | integer           | not null
+Indexes:
+    "staff_pkey" PRIMARY KEY, btree (sid)
+
+
+CREATE TABLE liasons (
+	sid int NOT NULL,
+	sname varchar NOT NULL,
+	FOREIGN KEY (sid) REFERENCES staff(sid),
+	FOREIGN KEY (sname) REFERENCES sponsor(sname),
+	primary key(sid,sname)
+);
+CREATE TABLE
+\d liasons
+        Table "cs421g45.liasons"
+ Column |       Type        | Modifiers 
+--------+-------------------+-----------
+ sid    | integer           | not null
+ sname  | character varying | not null
+Indexes:
+    "liasons_pkey" PRIMARY KEY, btree (sid, sname)
+Foreign-key constraints:
+    "liasons_sid_fkey" FOREIGN KEY (sid) REFERENCES staff(sid)
+    "liasons_sname_fkey" FOREIGN KEY (sname) REFERENCES sponsor(sname)
+
+
+create table schedule(
+        sid integer not null,
+        roomno varchar not null,
+        sdate date not null,
+        actname varchar not null,
+        actstart time not null,
+        foreign key (sid) references staff(sid),
+        foreign key (roomno) references room(roomno),
+        foreign key (sdate, actname) references schedactivity(sdate, actname) ON UPDATE CASCADE ON DELETE CASCADE,
+        primary key(sid, roomno, sdate, actname)
+);
+CREATE TABLE
+\d schedule
+           Table "cs421g45.schedule"
+  Column  |          Type          | Modifiers 
+----------+------------------------+-----------
+ sid      | integer                | not null
+ roomno   | character varying      | not null
+ sdate    | date                   | not null
+ actname  | character varying      | not null
+ actstart | time without time zone | not null
+Indexes:
+    "schedule_pkey" PRIMARY KEY, btree (sid, roomno, sdate, actname)
+Foreign-key constraints:
+    "schedule_roomno_fkey" FOREIGN KEY (roomno) REFERENCES room(roomno)
+    "schedule_sdate_fkey" FOREIGN KEY (sdate, actname) REFERENCES schedactivity(sdate, actname) ON UPDATE CASCADE ON DELETE CASCADE
+    "schedule_sid_fkey" FOREIGN KEY (sid) REFERENCES staff(sid)
+
+
+alter table sponsorships add constraint sponsorships_amount_check check (amount>0);
+ALTER TABLE
+\d sponsorships
+      Table "cs421g45.sponsorships"
+ Column  |       Type        | Modifiers 
+---------+-------------------+-----------
+ actname | character varying | not null
+ sname   | character varying | 
+ amount  | integer           | not null
+Indexes:
+    "sponsorships_pkey" PRIMARY KEY, btree (actname)
+Check constraints:
+    "sponsorships_amount_check" CHECK (amount > 0)
+Foreign-key constraints:
+    "sponsorships_actname_fkey" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+    "sponsorships_sname_fkey" FOREIGN KEY (sname) REFERENCES sponsor(sname)
+
+
+alter table guests add constraint speciality check 
+(speciality = 'speaker' or 
+speciality = 'vendor' or speciality = 'performer');
+ALTER TABLE
+\d guests
+           Table "cs421g45.guests"
+   Column   |       Type        | Modifiers 
+------------+-------------------+-----------
+ gname      | character varying | not null
+ g_phone    | character varying | 
+ country    | character varying | 
+ speciality | character varying | not null
+Indexes:
+    "guests_pkey" PRIMARY KEY, btree (gname, speciality)
+Check constraints:
+    "speciality" CHECK (speciality::text = 'speaker'::text OR speciality::text = 'vendor'::text OR speciality::text = 'performer'::text)
+Referenced by:
+    TABLE "performers" CONSTRAINT "performers_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+    TABLE "speakers" CONSTRAINT "speakers_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+    TABLE "vendors" CONSTRAINT "vendors_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+
+insert into sponsorships values('Power Hour', 'Pear', 0);
+ERROR:  new row for relation "sponsorships" violates check constraint "sponsorships_amount_check"
+DETAIL:  Failing row contains (Power Hour, Pear, 0).
+insert into guests values('Sam Smit', '1234567890', 'Canada', 'Juggler');
+ERROR:  new row for relation "guests" violates check constraint "speciality"
+DETAIL:  Failing row contains (Sam Smit, 1234567890, Canada, Juggler).
+
+

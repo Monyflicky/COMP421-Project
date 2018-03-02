@@ -1,0 +1,462 @@
+/*Query 1*/
+
+\d guests
+          Table "cs421g45.guests"
+   Column   |       Type        | Modifiers 
+------------+-------------------+-----------
+ gname      | character varying | not null
+ g_phone    | character varying | 
+ country    | character varying | 
+ speciality | character varying | not null
+Indexes:
+    "guests_pkey" PRIMARY KEY, btree (gname, speciality)
+Check constraints:
+    "speciality" CHECK (speciality::text = 'speaker'::text OR speciality::text = 'vendor'::text OR speciality::text = 'performer'::text)
+Referenced by:
+    TABLE "performers" CONSTRAINT "performers_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+    TABLE "speakers" CONSTRAINT "speakers_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+    TABLE "vendors" CONSTRAINT "vendors_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+
+\d speakers
+         Table "cs421g45.speakers"
+   Column   |       Type        | Modifiers 
+------------+-------------------+-----------
+ gname      | character varying | 
+ actname    | character varying | 
+ speciality | character varying | 
+Check constraints:
+    "speakers_speciality_check" CHECK (speciality::text = 'speaker'::text)
+Foreign-key constraints:
+    "speakers_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+    "speakers_panel_fk" FOREIGN KEY (actname) REFERENCES panel(actname) ON UPDATE CASCADE ON DELETE CASCADE
+
+\d vendors
+          Table "cs421g45.vendors"
+   Column   |       Type        | Modifiers 
+------------+-------------------+-----------
+ gname      | character varying | not null
+ actname    | character varying | 
+ speciality | character varying | not null
+Indexes:
+    "vendors_pkey" PRIMARY KEY, btree (gname, speciality)
+Check constraints:
+    "vendors_speciality_check" CHECK (speciality::text = 'vendor'::text)
+Foreign-key constraints:
+    "vendors_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+    "vendors_market_fk" FOREIGN KEY (actname) REFERENCES market(actname) ON UPDATE CASCADE ON DELETE CASCADE
+
+\d performers
+        Table "cs421g45.performers"
+   Column   |       Type        | Modifiers 
+------------+-------------------+-----------
+ gname      | character varying | 
+ actname    | character varying | 
+ speciality | character varying | 
+Check constraints:
+    "performers_speciality_check" CHECK (speciality::text = 'performer'::text)
+Foreign-key constraints:
+    "performers_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+    "performers_shows_fk" FOREIGN KEY (actname) REFERENCES shows(actname) ON UPDATE CASCADE ON DELETE CASCADE
+
+-------------------------------------------------------------------------------------------
+
+/*DESCRIPTION: This query checks the Speaker, Performer and Vendor relations and ensures
+that every entity in guest is referenced in at least one of these relations.
+It lists the guests that are not. This helps inforce a participation constraint.*/
+
+-------------------------------------------------------------------------------------------
+
+SELECT gname 
+FROM guests g
+WHERE g.gname NOT IN (SELECT gname FROM speakers
+					  UNION 
+					  SELECT gname FROM vendors
+					  UNION
+					  SELECT gname FROM performers);
+       gname       
+-------------------
+ Daryl Erickson
+ Gillian Wagner
+ Chastity Davidson
+ Katelyn Ford
+ Rudyard Morris
+ Bob pop
+(6 rows)
+
+=========================================================================================================================
+
+/*Query 2*/
+
+\d panel
+            Table "cs421g45.panel"
+  Column  |          Type          | Modifiers 
+----------+------------------------+-----------
+ expatt   | integer                | not null
+ agelim   | integer                | 
+ actname  | character varying      | 
+ reqstaff | integer                | not null
+ duration | time without time zone | not null
+Indexes:
+    "panel_actname_key" UNIQUE CONSTRAINT, btree (actname)
+Foreign-key constraints:
+    "panel_activity_fk" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+Referenced by:
+    TABLE "speakers" CONSTRAINT "speakers_panel_fk" FOREIGN KEY (actname) REFERENCES panel(actname) ON UPDATE CASCADE ON DELETE CASCADE
+
+\d speakers
+         Table "cs421g45.speakers"
+   Column   |       Type        | Modifiers 
+------------+-------------------+-----------
+ gname      | character varying | 
+ actname    | character varying | 
+ speciality | character varying | 
+Check constraints:
+    "speakers_speciality_check" CHECK (speciality::text = 'speaker'::text)
+Foreign-key constraints:
+    "speakers_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+    "speakers_panel_fk" FOREIGN KEY (actname) REFERENCES panel(actname) ON UPDATE CASCADE ON DELETE CASCADE
+
+\d market
+            Table "cs421g45.market"
+  Column  |          Type          | Modifiers 
+----------+------------------------+-----------
+ expatt   | integer                | not null
+ agelim   | integer                | 
+ actname  | character varying      | not null
+ reqstaff | integer                | not null
+ duration | time without time zone | not null
+Indexes:
+    "market_pkey" PRIMARY KEY, btree (actname)
+Foreign-key constraints:
+    "market_activity_fk" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+Referenced by:
+    TABLE "vendors" CONSTRAINT "vendors_market_fk" FOREIGN KEY (actname) REFERENCES market(actname) ON UPDATE CASCADE ON DELETE CASCADE
+
+\d vendors
+          Table "cs421g45.vendors"
+   Column   |       Type        | Modifiers 
+------------+-------------------+-----------
+ gname      | character varying | not null
+ actname    | character varying | 
+ speciality | character varying | not null
+Indexes:
+    "vendors_pkey" PRIMARY KEY, btree (gname, speciality)
+Check constraints:
+    "vendors_speciality_check" CHECK (speciality::text = 'vendor'::text)
+Foreign-key constraints:
+    "vendors_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+    "vendors_market_fk" FOREIGN KEY (actname) REFERENCES market(actname) ON UPDATE CASCADE ON DELETE CASCADE
+
+\d shows
+            Table "cs421g45.shows"
+  Column  |          Type          | Modifiers 
+----------+------------------------+-----------
+ expatt   | integer                | not null
+ agelim   | integer                | 
+ actname  | character varying      | 
+ reqstaff | integer                | not null
+ duration | time without time zone | not null
+Indexes:
+    "shows_actname_key" UNIQUE CONSTRAINT, btree (actname)
+Foreign-key constraints:
+    "shows_activity_fk" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+Referenced by:
+    TABLE "performers" CONSTRAINT "performers_shows_fk" FOREIGN KEY (actname) REFERENCES shows(actname) ON UPDATE CASCADE ON DELETE CASCADE
+
+\d performers
+        Table "cs421g45.performers"
+   Column   |       Type        | Modifiers 
+------------+-------------------+-----------
+ gname      | character varying | 
+ actname    | character varying | 
+ speciality | character varying | 
+Check constraints:
+    "performers_speciality_check" CHECK (speciality::text = 'performer'::text)
+Foreign-key constraints:
+    "performers_gname_fkey" FOREIGN KEY (gname, speciality) REFERENCES guests(gname, speciality)
+    "performers_shows_fk" FOREIGN KEY (actname) REFERENCES shows(actname) ON UPDATE CASCADE ON DELETE CASCADE
+
+-------------------------------------------------------------------------------------------
+
+/*DESCRIPTION: This query lists the names of Activites that are present in Activites
+entity set but not in the Vendor, Performer or Vendor relations. This 
+is a violation of participation constraints since all activities
+must have a host and therefore be referenced in one of these relations.*/
+
+-------------------------------------------------------------------------------------------
+
+SELECT actname FROM panel
+EXCEPT
+SELECT actname FROM speakers
+UNION
+SELECT actname FROM market
+EXCEPT
+SELECT actname FROM vendors
+UNION
+SELECT actname FROM shows
+EXCEPT
+SELECT actname FROM performers;
+ actname 
+---------
+(0 rows)
+
+=========================================================================================================================
+
+/*Query 3*/
+
+\d attendance
+       Table "cs421g45.attendance"
+  Column  |       Type        | Modifiers 
+----------+-------------------+-----------
+ username | character varying | not null
+ sdate    | date              | not null
+ actname  | character varying | not null
+Indexes:
+    "attendance_pkey" PRIMARY KEY, btree (username, sdate, actname)
+Foreign-key constraints:
+    "attendance_schedactivity_fk" FOREIGN KEY (sdate, actname) REFERENCES schedactivity(sdate, actname) ON UPDATE CASCADE ON DELETE CASCADE
+    "attendance_username_fkey" FOREIGN KEY (username) REFERENCES attendee(username)
+
+\d schedule
+           Table "cs421g45.schedule"
+  Column  |          Type          | Modifiers 
+----------+------------------------+-----------
+ sid      | integer                | not null
+ roomno   | character varying      | not null
+ sdate    | date                   | not null
+ actname  | character varying      | not null
+ actstart | time without time zone | not null
+ actend   | time without time zone | not null
+Indexes:
+    "schedule_pkey" PRIMARY KEY, btree (sid, roomno, sdate, actname)
+Foreign-key constraints:
+    "schedule_room_fk" FOREIGN KEY (roomno) REFERENCES room(roomno)
+    "schedule_schedactivity_fk" FOREIGN KEY (sdate, actname) REFERENCES schedactivity(sdate, actname) ON UPDATE CASCADE ON DELETE CASCADE
+    "schedule_sid_fkey" FOREIGN KEY (sid) REFERENCES staff(sid)
+
+-------------------------------------------------------------------------------------------
+
+/*DESCRIPTION: Given a specific attendee (in this case username 'jatei04') this query
+lists all the activities the user is interested in attending. In other words
+all entries in attendence that reference the username. It list them
+in order of occurance first by day, then by time, then name.*/
+
+-------------------------------------------------------------------------------------------
+
+SELECT temp.actname, temp.sdate, temp.actstart
+FROM	(SELECT DISTINCT a.actname, a.sdate, s.actstart
+		FROM attendance a, schedule s
+		WHERE  a.actname = s.actname AND a.sdate = s.sdate AND username = 'jatei04'
+		ORDER BY a.actname, a.sdate, s.actstart) temp
+ORDER BY temp.sdate, temp.actstart, temp.actname;
+                 actname                  |   sdate    | actstart 
+------------------------------------------+------------+----------
+ Cafe                                     | 2018-04-14 | 08:00:00
+ Dance Dance Evolution                    | 2018-04-14 | 08:00:00
+ Dealers Room                             | 2018-04-14 | 08:00:00
+ Auction House                            | 2018-04-14 | 09:00:00
+ Ethical Artificial Intelligence Workshop | 2018-04-14 | 10:00:00
+ Management in Analytics                  | 2018-04-14 | 10:30:00
+(6 rows)
+
+=========================================================================================================================
+
+/*Query 4*/
+
+\d liasons
+        Table "cs421g45.liasons"
+ Column |       Type        | Modifiers 
+--------+-------------------+-----------
+ sid    | integer           | not null
+ sname  | character varying | not null
+Indexes:
+    "liasons_pk" PRIMARY KEY, btree (sid, sname)
+Foreign-key constraints:
+    "liasons_sid_fkey" FOREIGN KEY (sid) REFERENCES staff(sid)
+    "liasons_sname_fkey" FOREIGN KEY (sname) REFERENCES sponsor(sname)
+
+\d sponsorships
+      Table "cs421g45.sponsorships"
+ Column  |       Type        | Modifiers 
+---------+-------------------+-----------
+ actname | character varying | not null
+ sname   | character varying | 
+ amount  | integer           | not null
+Indexes:
+    "sponsorships_pk" PRIMARY KEY, btree (actname)
+Check constraints:
+    "sponsorships_amount_check" CHECK (amount > 0)
+Foreign-key constraints:
+    "sponsorships_activity_fk" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+    "sponsorships_sname_fkey" FOREIGN KEY (sname) REFERENCES sponsor(sname)
+
+\d schedule 
+           Table "cs421g45.schedule"
+  Column  |          Type          | Modifiers 
+----------+------------------------+-----------
+ sid      | integer                | not null
+ roomno   | character varying      | not null
+ sdate    | date                   | not null
+ actname  | character varying      | not null
+ actstart | time without time zone | not null
+ actend   | time without time zone | not null
+Indexes:
+    "schedule_pkey" PRIMARY KEY, btree (sid, roomno, sdate, actname)
+Foreign-key constraints:
+    "schedule_room_fk" FOREIGN KEY (roomno) REFERENCES room(roomno)
+    "schedule_schedactivity_fk" FOREIGN KEY (sdate, actname) REFERENCES schedactivity(sdate, actname) ON UPDATE CASCADE ON DELETE CASCADE
+    "schedule_sid_fkey" FOREIGN KEY (sid) REFERENCES staff(sid)
+
+-------------------------------------------------------------------------------------------
+
+/*DESCRIPTION: This query checks that a staff who is assigned to a sponser in the liason relation,
+is also assigned to the activity (via the schedule relation) that the sponser is 
+sponsering (sponserships relation).*/
+
+-------------------------------------------------------------------------------------------
+
+select distinct liasons.sid, liasons.sname, schedule.actname, schedule.sdate
+from liasons
+inner join sponsorships on liasons.sname=sponsorships.sname and liasons.sid=944
+inner join schedule on schedule.actname=sponsorships.actname
+where schedule.actname not in (
+	select schedule.actname
+	from schedule
+	where sid=944
+);
+ sid |   sname   |                 actname                  |   sdate    
+-----+-----------+------------------------------------------+------------
+ 944 | Pear      | Dealers Room                             | 2018-04-13
+ 944 | MicroHard | Ethical Artificial Intelligence Workshop | 2018-04-14
+ 944 | Pear      | Dealers Room                             | 2018-04-15
+ 944 | Pear      | Dealers Room                             | 2018-04-14
+(4 rows)
+
+=========================================================================================================================
+
+/*Query 5*/
+
+\d staff
+         Table "cs421g45.staff"
+ Column |       Type        | Modifiers 
+--------+-------------------+-----------
+ sid    | integer           | not null
+ stname | character varying | not null
+ role   | character varying | 
+ hours  | integer           | not null
+Indexes:
+    "staff_pkey" PRIMARY KEY, btree (sid)
+Referenced by:
+    TABLE "liasons" CONSTRAINT "liasons_sid_fkey" FOREIGN KEY (sid) REFERENCES staff(sid)
+    TABLE "schedule" CONSTRAINT "schedule_sid_fkey" FOREIGN KEY (sid) REFERENCES staff(sid)
+
+\d schedule
+           Table "cs421g45.schedule"
+  Column  |          Type          | Modifiers 
+----------+------------------------+-----------
+ sid      | integer                | not null
+ roomno   | character varying      | not null
+ sdate    | date                   | not null
+ actname  | character varying      | not null
+ actstart | time without time zone | not null
+ actend   | time without time zone | not null
+Indexes:
+    "schedule_pkey" PRIMARY KEY, btree (sid, roomno, sdate, actname)
+Foreign-key constraints:
+    "schedule_room_fk" FOREIGN KEY (roomno) REFERENCES room(roomno)
+    "schedule_schedactivity_fk" FOREIGN KEY (sdate, actname) REFERENCES schedactivity(sdate, actname) ON UPDATE CASCADE ON DELETE CASCADE
+    "schedule_sid_fkey" FOREIGN KEY (sid) REFERENCES staff(sid)
+
+-------------------------------------------------------------------------------------------
+
+/*DESCRIPTION: Given a specific sid (staff ID number) this query gives the total number
+of hours the staff member is scheduled to work during the convention. 
+Staff are scheduled by being referenced in the schedule relation.*/
+
+-------------------------------------------------------------------------------------------
+
+SELECT SUM(temp.difference) AS total_hours
+FROM  staff st, (SELECT sid, actend - actstart AS difference
+				 FROM schedule) temp
+WHERE st.sid = 297 AND temp.sid = st.sid;
+ total_hours 
+-------------
+ 02:00:00
+(1 row)
+
+=========================================================================================================================
+
+/*Query 6*/
+\d attendee
+        Table "cs421g45.attendee"
+  Column  |       Type        | Modifiers 
+----------+-------------------+-----------
+ att_name | character varying | 
+ age      | integer           | 
+ address  | character varying | 
+ city     | character varying | 
+ province | character varying | 
+ a_phone  | character varying | 
+ email    | character varying | 
+ username | character varying | not null
+Indexes:
+    "attendee_pkey" PRIMARY KEY, btree (username)
+Referenced by:
+    TABLE "attendance" CONSTRAINT "attendance_username_fkey" FOREIGN KEY (username) REFERENCES attendee(username)
+
+\d attendance
+       Table "cs421g45.attendance"
+  Column  |       Type        | Modifiers 
+----------+-------------------+-----------
+ username | character varying | not null
+ sdate    | date              | not null
+ actname  | character varying | not null
+Indexes:
+    "attendance_pkey" PRIMARY KEY, btree (username, sdate, actname)
+Foreign-key constraints:
+    "attendance_schedactivity_fk" FOREIGN KEY (sdate, actname) REFERENCES schedactivity(sdate, actname) ON UPDATE CASCADE ON DELETE CASCADE
+    "attendance_username_fkey" FOREIGN KEY (username) REFERENCES attendee(username)
+
+\d activity
+           Table "cs421g45.activity"
+  Column  |          Type          | Modifiers 
+----------+------------------------+-----------
+ expatt   | integer                | not null
+ agelim   | integer                | 
+ actname  | character varying      | not null
+ reqstaff | integer                | not null
+ duration | time without time zone | not null
+Indexes:
+    "activity_pkey" PRIMARY KEY, btree (actname)
+Referenced by:
+    TABLE "market" CONSTRAINT "market_activity_fk" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+    TABLE "panel" CONSTRAINT "panel_activity_fk" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+    TABLE "rentals" CONSTRAINT "rentals_activity_fk" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+    TABLE "schedactivity" CONSTRAINT "schedactivity_activity_fk" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+    TABLE "shows" CONSTRAINT "shows_activity_fk" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+    TABLE "sponsorships" CONSTRAINT "sponsorships_activity_fk" FOREIGN KEY (actname) REFERENCES activity(actname) ON UPDATE CASCADE ON DELETE CASCADE
+
+-------------------------------------------------------------------------------------------
+
+/*DESCRIPTION: The query checks whether any attendees are planning to attend events for which
+they are too young. It does so by checking the attendance relation and checking
+the ages of referenced attendees and age limits of specific activites.
+It then lists the attendees name, their age, the actname and the age limit.*/
+
+-------------------------------------------------------------------------------------------
+
+SELECT aee.att_name, aee.age, temp.actname, temp.agelim
+FROM attendee aee, (SELECT aee.username, ance.actname, act.agelim, aee.age-act.agelim AS agediff
+                                   FROM attendee aee, attendance ance, activity act
+                                   WHERE aee.username = ance.username AND ance.actname = act.actname) temp
+WHERE aee.username = temp.username AND temp.agediff < 0;
+    att_name     | age |      actname      | agelim
+-----------------+-----+-------------------+--------
+ Carter Lindsay  |  15 | Power Hour        |     19
+ Carter Lindsay  |  15 | Rental Mario-Kart |     21
+ Iliana Swanson  |  20 | Rental Mario-Kart |     21
+ Callie Espinoza |  14 | Power Hour        |     19
+ Callie Espinoza |  14 | Rental Mario-Kart |     21
+(5 rows)
+
+
