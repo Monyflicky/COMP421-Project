@@ -1,0 +1,20 @@
+insert into equipment values('Microphone', 'MC101');
+INSERT 0 1
+insert into equipment values('Projector', 'PJ222');
+INSERT 0 1
+insert into equipment values('Microphone', 'MC213');
+INSERT 0 1
+insert into equipment values('Speaker', 'SP113');
+INSERT 0 1
+insert into equipment values('Speaker', 'SP115');
+INSERT 0 1 
+select * from equipment;
+  eq_name   | eq_id 
+------------+-------
+ Microphone | MC101
+ Projector  | PJ222
+ Microphone | MC213
+ Speaker    | SP113
+ Speaker    | SP115
+(5 rows)
+

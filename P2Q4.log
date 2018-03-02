@@ -1,0 +1,186 @@
+select * from attendee limit 5;
+   att_name    | age |           address            |        city         |     province     |    a_phone     |              email              | username 
+---------------+-----+------------------------------+---------------------+------------------+----------------+---------------------------------+----------
+ Hayes Black   |  23 | Ap #923-6197 Aliquet Avenue  | Delta               | British Columbia | (205) 604-9898 | vulputate.velit@enimNunc.edu    | fiwea84
+ Rhonda Carr   |  34 | Ap #197-7114 Habitant Avenue | Etobicoke           | Ontario          | (416) 373-1844 | sapien.cursus@tincidunt.edu     | xajoa61
+ Blaze Serrano |  21 | P.O. Box 209, 2192 Amet St.  | North Battleford    | Saskatchewan     | (306) 702-8757 | elementum.sem@telluseuaugue.com | xikou34
+ Shad Wolfe    |  27 | P.O. Box 284, 8278 Sed Road  | Hudson Bay          | Saskatchewan     | (306) 633-1164 | velit@sed.ca                    | wuheu17
+ Edan Gonzales |  22 | P.O. Box 896, 8111 Diam St.  | Pointe-aux-Trembles | Quebec           | (450) 865-4460 | neque@Etiam.edu                 | niqoa20
+(5 rows)
+
+select * from activity limit 5;
+ expatt | agelim |        actname        | reqstaff | duration 
+--------+--------+-----------------------+----------+----------
+     50 |        | Dance Dance Evolution |        3 | 01:00:00
+     40 |     19 | Power Hour            |        2 | 01:00:00
+     20 |     19 | Drunk Sword Fights    |        5 | 00:45:00
+     50 |     21 | Rental Mario-Kart     |        2 | 01:30:00
+    100 |        | Auction House         |        8 | 08:00:00
+(5 rows)
+
+select * from attendance limit 5;
+ username |   sdate    | actname 
+----------+------------+---------
+ fiwea84  | 2018-04-13 | Cafe
+ fidue61  | 2018-04-13 | Cafe
+ fahio78  | 2018-04-13 | Cafe
+ fihaa43  | 2018-04-13 | Cafe
+ femoi49  | 2018-04-13 | Cafe
+(5 rows)
+
+select * from equipment limit 5;
+  eq_name   | eq_id 
+------------+-------
+ Microphone | MC101
+ Projector  | PJ222
+ Microphone | MC213
+ Speaker    | SP113
+ Speaker    | SP115
+(5 rows)
+
+select * from guests limit 5;
+     gname      | g_phone  |      country      | speciality 
+----------------+----------+-------------------+------------
+ Barclay Fowler | 301-9893 | Guinea-Bissau     | speaker
+ Daryl Erickson | 142-9313 | Denmark           | vendor
+ Gillian Wagner | 564-6304 | Wallis and Futuna | performer
+ Noelle Crane   | 256-7889 | Mayotte           | performer
+ Emery Buck     | 769-4430 | Costa Rica        | speaker
+(5 rows)
+
+select * from liasons limit 5;
+ sid |    sname    
+-----+-------------
+ 944 | MicroHard
+ 944 | Pear
+ 800 | Crunchybowl
+ 800 | Funnymotion
+ 398 | Mvidia
+(5 rows)
+
+select * from market limit 5;
+ expatt | agelim |    actname    | reqstaff | duration 
+--------+--------+---------------+----------+----------
+   1000 |        | Dealers Room  |       15 | 24:00:00
+    100 |        | Auction House |        8 | 08:00:00
+     40 |        | Cafe          |        4 | 24:00:00
+(3 rows)
+
+select * from panel limit 5;
+ expatt | agelim |                actname                | reqstaff | duration 
+--------+--------+---------------------------------------+----------+----------
+     40 |     19 | Power Hour                            |        2 | 01:00:00
+     50 |     21 | Rental Mario-Kart                     |        2 | 01:30:00
+     50 |        | Conservative Energy                   |        3 | 00:30:00
+     60 |        | Informative Talks on Technical Topics |        4 | 00:40:00
+     30 |        | Engineering Diversity in Montreal     |        3 | 00:30:00
+(5 rows)
+
+select * from performers limit 5;
+     gname      |            actname             | speciality 
+----------------+--------------------------------+------------
+ Noelle Crane   | Dance Dance Evolution          | performer
+ Noelle Crane   | Drunk Sword Fights             | performer
+ Lev Kennedy    | The Nomination Game            | performer
+ Lev Kennedy    | Atlantic Comic                 | performer
+ Carter Rollins | Ponography Effects on Children | performer
+(5 rows)
+
+select * from rentals limit 5;
+ eq_id |                actname                
+-------+---------------------------------------
+ PJ222 | Dance Dance Evolution
+ EC021 | Dance Dance Evolution
+ MC101 | Power Hour
+ SP113 | Power Hour
+ LP001 | Informative Talks on Technical Topics
+(5 rows)
+
+select * from room limit 5;
+ roomno | capacity 
+--------+----------
+ N690   |       50
+ S976   |       20
+ S807   |      500
+ S311   |      500
+ S185   |     1000
+(5 rows)
+
+select * from schedactivity limit 5;
+   sdate    |   actname    
+------------+--------------
+ 2018-04-13 | Dealers Room
+ 2018-04-14 | Dealers Room
+ 2018-04-15 | Dealers Room
+ 2018-04-13 | Cafe
+ 2018-04-14 | Cafe
+(5 rows)
+
+select * from schedule limit 5;
+ sid | roomno |   sdate    |         actname         | actstart |  actend  
+-----+--------+------------+-------------------------+----------+----------
+ 874 | S185   | 2018-04-14 | Management in Analytics | 10:30:00 | 11:30:00
+ 503 | S185   | 2018-04-14 | Management in Analytics | 10:30:00 | 11:30:00
+ 183 | S185   | 2018-04-14 | Management in Analytics | 10:30:00 | 11:30:00
+ 672 | S185   | 2018-04-14 | Management in Analytics | 10:30:00 | 11:30:00
+ 144 | S185   | 2018-04-14 | Management in Analytics | 10:30:00 | 11:30:00
+(5 rows)
+
+select * from shows limit 5;
+ expatt | agelim |           actname           | reqstaff | duration 
+--------+--------+-----------------------------+----------+----------
+     50 |        | Dance Dance Evolution       |        3 | 01:00:00
+     20 |     19 | Drunk Sword Fights          |        5 | 00:45:00
+     45 |     15 | Television Crime Drama      |        4 | 00:30:00
+    100 |        | Narrative of Nelson Mandela |        5 | 00:30:00
+     70 |        | The Nomination Game         |        4 | 00:30:00
+(5 rows)
+
+select * from speakers limit 5;
+      gname       |              actname              | speciality 
+------------------+-----------------------------------+------------
+ Barclay Fowler   | Power Hour                        | speaker
+ Iona Casey       | Rental Mario-Kart                 | speaker
+ Cade Rocha       | Engineering Diversity in Montreal | speaker
+ Cade Rocha       | Engineering Diversity in Montreal | speaker
+ Brenden Holloway | Conservative Energy               | speaker
+(5 rows)
+
+select * from sponsor limit 5;
+    sname    | contrib 
+-------------+---------
+ Pear        |    2000
+ Crunchybowl |   16500
+ Funnymotion |   19000
+ Mvidia      |    1337
+ MicroHard   |    5000
+(5 rows)
+
+select * from sponsorships limit 5;
+                 actname                  |    sname    | amount 
+------------------------------------------+-------------+--------
+ Ethical Artificial Intelligence Workshop | MicroHard   |   1000
+ Dealers Room                             | Pear        |    500
+ Power Hour                               | Crunchybowl |    600
+ Dance Dance Evolution                    | Funnymotion |   1200
+ Management in Analytics                  | Mvidia      |   1000
+(5 rows)
+
+select * from staff limit 5;
+ sid |      stname       |    role     | hours 
+-----+-------------------+-------------+-------
+ 800 | Timon Baldwin     |  organizer  |     5
+ 944 | Caesar Bentley    |  organizer  |     1
+ 874 | Nayda Garner      | security    |    24
+ 144 | Blossom Singleton |  executive  |    22
+ 683 | Sierra Mcintyre   |  guide      |     6
+(5 rows)
+
+select * from vendors limit 5;
+     gname      |    actname    | speciality 
+----------------+---------------+------------
+ Colin Humphrey | Auction House | vendor
+ Brian Ross     | Cafe          | vendor
+ Fiona Melendez | Dealers Room  | vendor
+(3 rows)
+
