@@ -46,6 +46,7 @@ public class Query{
             System.out.println(e);
         }
     }
+
     public boolean checkGuest(String name, String spc){
         String spec = "";
         if (spc.equals("P")){ spec = "performer";}
@@ -190,9 +191,9 @@ public class Query{
             }
         }
         catch(Exception e){
-            System.out.println("Exists");
-            System.out.println(query);
-            System.out.println(e);
+            //System.out.println("Exists");
+            //System.out.println(query);
+            //System.out.println(e);
         }
         return  false;
     }
@@ -222,9 +223,9 @@ public class Query{
             statement.executeUpdate(query);
         }
         catch(Exception e){
-            System.out.println("Alter Table");
-            System.out.println(query);
-            System.out.println(e);
+            //System.out.println("Alter Table");
+            //System.out.println(query);
+            //System.out.println(e);
             return false;
         }
         return  true;
@@ -273,6 +274,20 @@ public class Query{
 
     //Query 1
     public void insertGA(){
+
+        System.out.println("Activity Table");
+        display("select * from activity;");
+        System.out.println();
+        System.out.println("Panel Table");
+        display("select * from panel;");
+        System.out.println();
+        System.out.println("Guests Table");
+        display("select * from guests;");
+        System.out.println();
+        System.out.println("Speakers Table");
+        display("select * from speakers;");
+        System.out.println();
+
         String input;
         System.out.println("Give the name of the guest");
         Scanner console = new Scanner(System.in);
@@ -300,7 +315,7 @@ public class Query{
             System.out.println("Please give a Country or just enter if none");
             String country = console.nextLine();
             check = createGuest(gname, spec, phonenum, country);
-            if(!check){return;}
+            if(!check){ return;}
         }
 
         //
@@ -328,47 +343,70 @@ public class Query{
         //Create input in one of three other tables
         createGA(gname, name, spec);
 
+        System.out.println("Activity Table");
+        display("select * from activity;");
+        System.out.println();
+        System.out.println("Panel Table");
+        display("select * from panel;");
+        System.out.println();
+        System.out.println("Guests Table");
+        display("select * from guests;");
+        System.out.println();
+        System.out.println("Speakers Table");
+        display("select * from speakers;");
+        System.out.println();
+
     }
 
     //Query 2
-    public boolean limitMaxHours(){
-        System.out.println("Please give new value for max hours");
+    public boolean createSchedActivity(){
+        display("Select * from schedactivity;");
         Scanner console = new Scanner(System.in);
         String input;
-        int x = 0;
-        boolean isint = false;
-
-        while(!isint){
+        System.out.println("Give name of activity to schedule");
+        input = console.nextLine();
+        while(!exists("Select * from activity where actname = '" + input + "';")){
+            System.out.println("Please enter a valid activity name");
             input = console.nextLine();
-            try {
-                x = Integer.parseInt(input);
-                isint = true;
+        }
+        String actname = input;
+        boolean success = false;
+
+        while(!success) {
+            System.out.println("Please give a date on which to schedule this activity: Format YYYY-MM-DD");
+            input = console.nextLine();
+            if (!exists("select * from schedactivity where actname  ='" + actname + "' AND sdate = '" + input + "';")) {
+                success = true;
+                if(!alterTable("insert into schedactivity values('" + input + "','" + actname + "');")) {
+                    System.out.println("Invalid date format");
+                    success = false;
+                }
+                else{
+                    System.out.println("Activity scheduling has been successful");
+                    success = true;
+                    display("Select * from schedactivity;");
+                    return true;
+                }
             }
-            catch (Exception e) {
-                System.out.println("Please Enter Integer");
-                isint = false;
+            else {
+                System.out.println("The activity is already scheduled for this day.");
+                display("Select * from schedactivity;");
+                return true;
             }
         }
-        String query = "Select * from staff where hours > " + x + ";";
-        //String query = "Select * from guests where gname = 'Brian Ross' and speciality = 'vendor'";
-        try{
-            Statement stat2 = con.createStatement();
-            java.sql.ResultSet rs = statement.executeQuery ( query );
-            while(rs.next()){
-                int id = rs.getInt(1);
-                query = "update staff set hours = " + x + " where sid = '" + id + "';";
-                stat2.executeUpdate(query);
-                stat2.close();
-            }
-        }
-        catch(Exception e){
-            System.out.println(e);
-        }
-        return  false;
+
+        return true;
     }
 
     //Query 3
     public boolean alter(){
+        System.out.println("Sponsor Table: ");
+        display("Select * from sponsor;");
+        System.out.println();
+        System.out.println("Sponsorships Table: ");
+        display("Select * from sponsorships;");
+        System.out.println();
+
         display("Select sname from sponsor;");
         Scanner console = new Scanner(System.in);
         System.out.println("Please Give Name of Sponsor");
@@ -389,7 +427,6 @@ public class Query{
         String newbalance = "0";
         //Total Contribution
         if(input.equalsIgnoreCase("Y")){
-
             boolean check = false;
             int newbal;
             while(!check){
@@ -415,7 +452,15 @@ public class Query{
                 System.out.println("This new balance is lower than individual balances and thus cannot be accepted");
             }
             else{
-                if(alterTable("update sponsor set contrib = " + newbalance + " where sname = '" + sname + "';")){return true;}
+                if(alterTable("update sponsor set contrib = " + newbalance + " where sname = '" + sname + "';")){
+                    System.out.println("Sponsor Table: ");
+                    display("Select * from sponsor;");
+                    System.out.println();
+                    System.out.println("Sponsorships Table: ");
+                    display("Select * from sponsorships;");
+                    System.out.println();
+                    return true;
+                }
                 return false;
             }
 
@@ -475,11 +520,23 @@ public class Query{
                 System.out.println(e);
             }
         }
+
+        System.out.println("Sponsor Table: ");
+        display("Select * from sponsor;");
+        System.out.println();
+        System.out.println("Sponsorships Table: ");
+        display("Select * from sponsorships;");
+        System.out.println();
+
         return true;
     }
 
     //Query 4
     public boolean scheduleAttendee(){
+        System.out.println("Attendance Table: ");
+        display("Select * from attendance;");
+        System.out.println();
+
         Scanner console = new Scanner(System.in);
         String input;
         System.out.println("Please give your username.");
@@ -491,7 +548,7 @@ public class Query{
         String username = input;
         boolean cont = true;
         while(cont){
-            display("Select * from activity");
+            display("Select actname from activity");
             System.out.println("Give the name of an activity you'd like to register for:");
             input = console.nextLine();
             while (!(exists("Select * from activity where actname = '" + input + "';"))){
@@ -501,7 +558,7 @@ public class Query{
             String actname = input;
             if(!exists("select * from schedule where actname = '" + actname + "';")){
                 System.out.println("Sorry this activity has not been scheduled yet.");}
-            else if(display("Select sdate, actstart from schedule where actname = '" + actname + "';")){
+            else if(display("Select distinct sdate, actstart from schedule where actname = '" + actname + "';")){
                 System.out.println("Please select a date for this activity. Please give in the form YYYY-DD-MM");
                 input = console.nextLine();
                 while(!exists("Select from schedule where actname = '" + actname + "' AND sdate = '" + input + "';")){
@@ -535,7 +592,7 @@ public class Query{
             }
 
 
-            System.out.println("Do you want to register for another activity?");
+            System.out.println("Do you want to register for another activity? Y/N");
             input = console.nextLine();
             while (!(input.equalsIgnoreCase("Y") || input.equalsIgnoreCase("N"))) {
                 System.out.println("Do you want to register for another activity? Y/N");
@@ -548,13 +605,20 @@ public class Query{
                 cont = false;}
         }
 
-        display("Select * from attendance where username = '" + username + "' Order by sdate");
+        System.out.println("Attendee's Schedule");
+        display("Select * from attendance where username = '" + username + "' Order by sdate;");
+        System.out.println();
+        System.out.println("Attendance Table");
+        display("select * from attendance;");
         return true;
 
     }
 
     //Query 5
     public boolean scheduleActivity(){
+        System.out.println("Schedule");
+        display("Select * from schedule");
+        System.out.println();
 
         //Assign value of actname
         System.out.println("Give name of activity to schedule");
@@ -643,6 +707,11 @@ public class Query{
                             if (schedStaff(newstart, newend, numstaff, curnumstaff, roomid, actname, date)) {
                                 roomsched.close();
                                 System.out.println("Registration successful");
+
+                                System.out.println("Schedule");
+                                display("Select * from schedule");
+                                System.out.println();
+
                                 return true;
                             }
                         }
@@ -679,6 +748,10 @@ public class Query{
             }
             if(schedStaff(newstart, newend, numstaff, curnumstaff, roomid, actname, date)){
                 System.out.println("Scheduling was successful");
+
+                System.out.println("Schedule");
+                display("Select * from schedule");
+                System.out.println();
                 return true;
             }
             else{
@@ -690,6 +763,51 @@ public class Query{
 
     }
 
+    //Query 6
+    public boolean limitMaxHours(){
+
+        System.out.println("Staff: ");
+        display("select * from staff");
+        System.out.println("Please give new value for max hours");
+        Scanner console = new Scanner(System.in);
+        String input;
+        int x = 0;
+        boolean isint = false;
+
+        while(!isint){
+            input = console.nextLine();
+            try {
+                x = Integer.parseInt(input);
+                isint = true;
+            }
+            catch (Exception e) {
+                System.out.println("Please Enter Integer");
+                isint = false;
+            }
+        }
+        String query = "Select * from staff where hours > " + x + ";";
+        //String query = "Select * from guests where gname = 'Brian Ross' and speciality = 'vendor'";
+        try{
+            Statement stat2 = con.createStatement();
+            java.sql.ResultSet rs = statement.executeQuery ( query );
+            while(rs.next()){
+                int id = rs.getInt(1);
+                query = "update staff set hours = " + x + " where sid = '" + id + "';";
+                stat2.executeUpdate(query);
+
+            }
+            stat2.close();
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+
+        System.out.println("Staff: ");
+        display("select * from staff;");
+        return  true;
+    }
+
+
     public static void main(String[] args){
         Query q = new Query();
         String input;
@@ -698,17 +816,19 @@ public class Query{
         while(cont){
             System.out.println("Please select the operation you'd like to perform");
             System.out.println("1: Create New Guest And Activity Or Assign Activity To Existing Guest");
-            System.out.println("2: Change Max Hour Limit For Staff");
+            System.out.println("2: Schedule An Activity");
             System.out.println("3: Alter Total Or Individual Contribution Of Sponsor");
             System.out.println("4: Select Activities To Attend For Guest");
             System.out.println("5: Assign Room And Staff To Scheduled Activity");
+            System.out.println("6: Alter Max Hours");
             System.out.println("Q: Quit");
             input = console.nextLine();
-            if(input.equalsIgnoreCase("1")){q.insertGA();}
-            else if(input.equalsIgnoreCase("2")){ q.limitMaxHours();}
+            if(input.equalsIgnoreCase("1")){ q.insertGA();}
+            else if(input.equalsIgnoreCase("2")){ q.createSchedActivity();}
             else if(input.equalsIgnoreCase("3")){ q.alter();}
             else if(input.equalsIgnoreCase("4")){ q.scheduleAttendee();}
             else if(input.equalsIgnoreCase("5")){ q.scheduleActivity();}
+            else if(input.equalsIgnoreCase("6")){ q.limitMaxHours();}
             else if(input.equalsIgnoreCase("Q")){
                 cont = false;
             }
@@ -717,6 +837,7 @@ public class Query{
             }
         }
         q.close();
+        System.out.println("All Done!!");
 
     }
 }
